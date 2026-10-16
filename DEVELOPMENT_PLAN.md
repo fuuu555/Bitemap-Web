@@ -713,31 +713,52 @@ Stage 8 社交與聊天室核心功能已完成（2026-10-03）。本批後端 2
 - 圖片訊息、圖片上傳與 S3／Object Storage。
 - 使用者檢舉功能與後續處理流程。
 
-## 12. 階段 9：PWA、部署與正式環境強化
+## 12. 階段 9：PWA 與正式環境
 
 ### 目標
 
-把已驗證的 Web MVP 轉為可安裝、可觀測、可安全營運的版本。
+分兩部分交付：先在本機環境完成可安裝、可安全更新的 PWA，並以手機實機驗收；再部署雲端正式環境。Stage 9A 仍由本機 API 與資料庫提供資料，不要求先搬遷資料庫。
 
-### 開發內容
+### Stage 9A：本機 PWA 與手機實機驗收
 
-- Web App Manifest、圖示、standalone 顯示模式。
-- Service Worker 先快取 App Shell 與安全的靜態資源。
-- Service Worker 更新提示與版本失效策略。
-- Web Push 權限、訂閱及通知偏好。
-- Next.js、FastAPI、Celery Worker 分開部署。
-- PostgreSQL、Redis、Object Storage 使用代管服務與備份。
-- OpenTelemetry Trace、Sentry、結構化 Log。
-- API、地圖外部服務及背景工作的費用與配額監控。
-- Rate limit、檔案上傳限制、Secret 管理與安全標頭。
-- 正式環境 Migration、回滾及資料備份演練。
+#### 開發內容
 
-### 完成條件
+- 建立 Web App Manifest、App 圖示、主題色與 standalone 顯示模式。
+- 加入 Service Worker，快取 App Shell 與經確認安全的靜態資源，提供清楚的離線提示頁。
+- 加入 Service Worker 更新提示、快取版本管理與舊版清除策略。
+- 本機瀏覽器使用 localhost 驗收；手機透過同一網路上的 HTTPS 網址連到本機前端與 API。可使用受信任的本機 HTTPS 設定或安全的臨時 HTTPS 通道，PostgreSQL/PostGIS 與 Redis 保留在本機。
+- 本階段維持線上資料流程；不快取登入後私人資料、API 回應、地圖圖磚或聊天室訊息，不提供離線資料操作與同步。
+- Web Push 延後至雲端環境評估，不列入本機 PWA 完成條件。
 
-- 支援的手機瀏覽器可以安裝 PWA。
-- Service Worker 更新不會讓使用者長期停留在舊版。
-- 主要 E2E 流程在預備環境通過。
-- 錯誤可追蹤至 Web、API 或 Worker 的同一 Trace。
+#### 完成條件
+
+- 在 localhost 可由支援的桌面瀏覽器安裝，並以 standalone 模式開啟。
+- 手機可透過 HTTPS 連到本機服務並加入主畫面；登入、地圖與主要頁面可正常載入。
+- 斷網時顯示離線提示；恢復連線後能重新載入線上資料。
+- Service Worker 更新後能提示使用者並清除不再使用的快取版本。
+- Service Worker 不會保存認證內容、使用者私人資料或即時聊天資料。
+
+### Stage 9B：雲端部署與正式環境強化
+
+#### 開發內容
+
+- 部署 Next.js 前端與 FastAPI，使用 HTTPS；REST API 與 WebSocket 透過同源代理或明確設定的安全端點連線。
+- 部署支援 PostGIS 的 PostgreSQL 與 Redis。資料庫不直接公開給瀏覽器，只允許後端透過私有網路或受限連線存取。
+- 設定正式環境 Secret、Secure／HttpOnly Cookie、安全標頭、Rate limit 與外部服務配額監控。
+- 建立正式 Migration、回滾、資料備份及還原演練；由本機開發資料移轉正式環境時，以 Migration 與明確的資料匯入流程處理，不直接複製開發資料庫作為正式資料。
+- 導入結構化 Log、Sentry／OpenTelemetry 等錯誤與 Trace 追蹤，以及 API、地圖外部服務和背景工作的費用監控。
+- 在公開正式環境使用前確認 Geocoding Provider、Google Places 等外部資料的授權與服務條款。
+- 只有在正式啟用圖片上傳或非同步處理時，才將 S3 相容 Object Storage 與 Celery Worker 納入該次上線範圍。
+- Web Push 權限、訂閱與通知偏好列為可選擴充，不阻擋雲端核心版本上線。
+- 若對外開放使用者產生內容，需評估 Stage 6 留言管理及 Stage 8 檢舉流程的營運風險與處理方式。
+
+#### 完成條件
+
+- 支援的手機瀏覽器能從正式 HTTPS 網址安裝 PWA。
+- 登入、地圖／定位、餐廳、約飯與聊天室主要流程在預備環境完成端到端驗收；WebSocket 斷線後可恢復並補齊權威資料。
+- Service Worker 更新不會讓使用者長期停留在舊版，且不會快取私人或即時資料。
+- 正式資料庫完成備份與還原演練，Migration 有可執行的升級與回滾流程。
+- Web 與 API 錯誤可被監控，正式環境 Secret、Rate limit 與安全標頭已設定。
 
 ## 13. 階段 10：未來店家資料自動補充
 
