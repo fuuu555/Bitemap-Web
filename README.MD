@@ -1,5 +1,7 @@
 # BiteMap
 
+產品功能說明書：[FUNCTIONAL_REQUIREMENTS.md](FUNCTIONAL_REQUIREMENTS.md)
+
 ## 快速啟動（Windows 11）
 
 ### 1. 安裝工具
