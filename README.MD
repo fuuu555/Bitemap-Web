@@ -3,9 +3,9 @@
 ## 快速啟動（Windows 11）
 
 ### 1. 安裝工具
-
 `winget` 是 Windows 用來安裝軟體的指令工具。用 PowerShell 安裝 Node.js、Python 和 `uv`：
 
+若有下載過不用在安裝
 ```powershell
 winget install --id OpenJS.NodeJS.LTS --exact
 winget install --id Python.Python.3.12 --exact
@@ -17,7 +17,6 @@ winget install --id astral-sh.uv --exact
 ```powershell
 npm install --global pnpm@11.19.0
 ```
-
 ### 2. 下載專案並準備資料庫
 
 ```powershell
@@ -28,8 +27,18 @@ pnpm install
 pnpm db:up
 pnpm db:migrate
 ```
+### 3. 修改 env
 
-### 3. 啟動網站
+接著依照需要修改 `.env` 裡的環境設定：
+
+- **Google OAuth Client ID：** `""`
+  - 請在 `""` **填入你自己的 Google OAuth Client ID**，再填入 `.env`。
+- **Google OAuth Client Secret：** `""`
+  - 請在 `""` **填入你自己的 Google OAuth Client Secret**，再填入 `.env`。
+- **Google Places API Key：** `""`
+  - 請在 `""` **填入你自己的 Google Places API Key**，再填入 `.env`。
+
+### 4. 啟動網站
 
 開兩個 PowerShell 視窗，都在 `bite-app` 專案資料夾內執行。
 
@@ -46,9 +55,10 @@ pnpm build:frontend
 pnpm --dir apps/frontend start
 ```
 
-開啟 <http://localhost:3000>。前端程式更新後，按 `Ctrl+C` 停止前端，再重新執行上面兩個前端指令。
+開啟 <http://localhost:3000> 打開網頁。
 
-### 4. 登入管理員並新增店家
+
+### 5. 登入管理員並新增店家
 
 先在第三個 PowerShell 視窗建立管理員帳號。把信箱 `"admin@example.local"` 和密碼換成自己的；密碼至少 6 個字元：
 
